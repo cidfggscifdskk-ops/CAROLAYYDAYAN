@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colegio La Primera</title>
+    <style>
+        /* --- ESTILOS GLOBALES --- */
+        :root {
+            --verde-oscuro: #0f5132;
+            --verde-claro: #198754;
+            --blanco: #ffffff;
+            --gris-claro: #f8f9fa;
+            --texto-oscuro: #212529;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--gris-claro);
+            color: var(--texto-oscuro);
+        }
+
+        /* --- PANTALLA DE BIENVENIDA --- */
+        #pantalla-bienvenida {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(15, 81, 50, 0.85), rgba(15, 81, 50, 0.95)), 
+                        url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80') no-repeat center center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--blanco);
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #pantalla-bienvenida h1 {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        #pantalla-bienvenida p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        #pantalla-bienvenida .btn-ingresar {
+            background-color: var(--blanco);
+            color: var(--verde-oscuro);
+            padding: 12px 35px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        #pantalla-bienvenida .btn-ingresar:hover {
+            transform: scale(1.05);
+            background-color: var(--gris-claro);
+        }
+
+        /* --- PANTALLA PRINCIPAL --- */
+        #pantalla-principal {
+            display: none; /* Se activa con JS */
+        }
+
+        /* Navbar */
+        header {
+            background-color: var(--verde-oscuro);
+            color: var(--blanco);
+            padding: 15px 5%;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h2 {
+            font-weight: 600;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        nav ul li a {
+            color: var(--blanco);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            background-color: var(--verde-claro);
+        }
+
+        /* Secciones */
+        .seccion {
+            display: none; /* Ocultas por defecto, JS las muestra */
+            padding: 60px 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .seccion.activa {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2.titulo-seccion {
+            color: var(--verde-oscuro);
+            border-bottom: 3px solid var(--verde-claro);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+
+        /* 1. Estilos Colegio (Misión y Visión) */
+        .mv-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .card-mv {
+            background-color: var(--blanco);
+            padding: 30px;
+            border-radius: 8px;
+            border-top: 5px solid var(--verde-oscuro);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .card-mv h3 {
+            color: var(--verde-oscuro);
+            margin-bottom: 15px;
+        }
+
+        /* 2 y 3. Estilos Actividades y Panel Informativo */
+        .grid-actividades {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .card-actividad {
+            background-color: var(--blanco);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .card-actividad img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .info-actividad {
+            padding: 20px;
+        }
+
+        .fecha-tag {
+            display: inline-block;
+            background-color: var(--verde-oscuro);
+            color: var(--blanco);
+            padding: 5px 10px;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        /* Subsecciones Panel Informativo */
+        .panel-info-section {
+            margin-top: 40px;
+            background-color: var(--blanco);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .panel-info-section h3 {
+            color: var(--verde-oscuro);
+            margin-bottom: 15px;
+        }
+
+        /* 4. Formularios */
+        .form-container {
+            background-color: var(--blanco);
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--verde-oscuro);
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--verde-oscuro);
+        }
+
+        .btn-enviar {
+            background-color: var(--verde-oscuro);
+            color: var(--blanco);
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        .btn-enviar:hover {
+            background-color: var(--verde-claro);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--verde-oscuro);
+            color: var(--blanco);
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .nav-container { flex-direction: column; gap: 15px; }
+            nav ul { flex-wrap: wrap; justify-content: center; }
+            .mv-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="pantalla-bienvenida">
+        <h1>Colegio "La Primera"</h1>
+        <p>Formando líderes con valores para el futuro de Bolivia</p>
+        <button class="btn-ingresar" onclick="ingresarWeb()">Ingresar al Sitio</button>
+    </div>
+
+    <div id="pantalla-principal">
+        
+        <header>
+            <div class="nav-container">
+                <div class="logo">
+                    <h2>Colegio La Primera</h2>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a onclick="cambiarSeccion('colegio')" id="nav-colegio" class="active">Colegio</a></li>
+                        <li><a onclick="cambiarSeccion('actividades')" id="nav-actividades">Actividades</a></li>
+                        <li><a onclick="cambiarSeccion('panel')" id="nav-panel">Panel Informativo</a></li>
+                        <li><a onclick="cambiarSeccion('formularios')" id="nav-formularios">Formularios</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <section id="colegio" class="seccion activa">
+            <h2 class="titulo-seccion">Nuestra Institución</h2>
+            <div class="mv-container">
+                <div class="card-mv">
+                    <h3>Misión</h3>
+                    <p>Brindar una educación integral y de alta calidad académica a nuestros estudiantes basándonos en valores éticos y morales, potenciando sus habilidades individuales para convertirlos en ciudadanos responsables y proactivos que aporten al desarrollo del país.</p>
+                </div>
+                <div class="card-mv">
+                    <h3>Visión</h3>
+                    <p>Ser reconocidos para el año 2030 como una institución educativa líder a nivel nacional, a la vanguardia de la tecnología y la pedagogía moderna, distinguidos por nuestra excelencia académica y el compromiso social de nuestros graduados.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="actividades" class="seccion">
+            <h2 class="titulo-seccion">Calendario de Actividades (Bolivia)</h2>
+            <div class="grid-actividades">
+                
+                <div class="card-actividad">
+                    <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=500&q=80" alt="Día del Padre">
+                    <div class="info-actividad">
+                        <span class="fecha-tag">19 de Marzo</span>
+                        <h3>Día del Padre</h3>
+                        <p>Homenaje especial y acto cívico en honor a todos los padres de familia de la comunidad educativa.</p>
+                    </div>
+                </div>
+
+                <div class="card-actividad">
+                    <img src="https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&w=500&q=80" alt="Día del Niño">
+                    <div class="info-actividad">
+                        <span class="fecha-tag">12 de Abril</span>
+                        <h3>Día del Niño</h3>
+                        <p>Una jornada llena de juegos, dinámicas y sorpresas dedicadas a agasajar a los más pequeños del colegio.</p>
+                    </div>
+                </div>
+
+                <div class="card-actividad">
+                    <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=500&q=80" alt="Día de la Madre">
+                    <div class="info-actividad">
+                        <span class="fecha-tag">27 de Mayo</span>
+                        <h3>Día de la Madre</h3>
+                        <p>Recordando a las Heroínas de la Coronilla, celebramos con un festival artístico dedicado a las mamás.</p>
+                    </div>
+                </div>
+
+                <div class="card-actividad">
+                    <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=500&q=80" alt="Día del Maestro">
+                    <div class="info-actividad">
+                        <span class="fecha-tag">6 de Junio</span>
+                        <h3>Día del Maestro</h3>
+                        <p>Reconocimiento a la labor incansable de nuestro plantel docente en la formación de las futuras generaciones.</p>
+                    </div>
+                </div>
+
+                <div class="card-actividad">
+                    <img src="https://images.unsplash.com/photo-1569930784237-ea65a2f40a83?auto=format&fit=crop&w=500&q=80" alt="6 de Agosto">
+                    <div class="info-actividad">
+                        <span class="fecha-tag">6 de Agosto</span>
+                        <h3>Aniversario de Bolivia</h3>
+                        <p>Desfile cívico y hora cívica especial conmemorando la independencia de nuestra querida patria.</p>
+                    </div>
+                </div>
+
+                <div class="card-actividad">
+                    <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=500&q=80" alt="Día del Estudiante">
+                    <div class="info-actividad">
+                        <span class="fecha-tag">21 de Septiembre</span>
+                        <h3>Día del Estudiante / Primavera</h3>
+                        <p>Festejamos la juventud, la amistad y la llegada de la primavera con actividades recreativas.</p>
+                    </div>
+                </div>
+
+                <div class="card-actividad">
+                    <img src="https://images.unsplash.com/photo-1491841573190-a2dc35b427fe?auto=format&fit=crop&w=500&q=80" alt="Aniversario Colegio">
+                    <div class="info-actividad">
+                        <span class="fecha-tag">15 de Octubre</span>
+                        <h3>Aniversario del Colegio "La Primera"</h3>
+                        <p>Celebración de nuestra fundación institucional con concursos culturales, deportivos y sesión de gala.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="panel" class="seccion">
+            <h2 class="titulo-seccion">Panel Informativo</h2>
+            
+            <div class="panel-info-section">
+                <h3>🗣️ Entrevistas de Materias</h3>
+                <p>Las entrevistas con los asesores de materia y directores de área académica para la revisión de notas y avance curricular se llevarán a cabo en las siguientes fechas:</p>
+                <br>
+                <ul>
+                    <li><strong>Área de Ciencias (Matemáticas/Física):</strong> Martes de 09:00 a 11:00.</li>
+                    <li><strong>Área de Humanidades (Lenguaje/Historia):</strong> Jueves de 14:30 a 16:30.</li>
+                </ul>
+            </div>
+
+            <div class="panel-info-section">
+                <h3>❄️ Horario de Invierno</h3>
+                <p>De acuerdo a las disposiciones del Ministerio de Educación de Bolivia y el SEDUCA, se informa la aplicación del <strong>Horario de Invierno</strong> a partir de la fecha:</p>
+                <br>
+                <ul>
+                    <li><strong>Turno Mañana:</strong> El ingreso se retrasa en 30 minutos (08:30 am).</li>
+                    <li><strong>Turno Tarde:</strong> La salida se adelanta en 30 minutos (18:00 pm).</li>
+                </ul>
+                <p style="margin-top: 10px; color: var(--verde-claro); font-weight: bold;">Nota: Se permite el ingreso con ropa abrigadora adicional al uniforme formal.</p>
+            </div>
+        </section>
+
+        <section id="formularios" class="seccion">
+            <h2 class="titulo-seccion">Formularios de Atención</h2>
+            <div class="form-container">
+                <h3 style="color: var(--verde-oscuro); margin-bottom: 20px; text-align: center;">Consulta al Profesor</h3>
+                
+                <form id="formConsulta" onsubmit="enviarFormulario(event)">
+                    <div class="form-group">
+                        <label for="nombre-padre">Nombre del Padre/Tutor:</label>
+                        <input type="text" id="nombre-padre" required placeholder="Ej. Juan Pérez">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nombre-estudiante">Nombre del Estudiante:</label>
+                        <input type="text" id="nombre-estudiante" required placeholder="Ej. Luis Pérez">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="curso">Curso:</label>
+                        <select id="curso" required>
+                            <option value="">Seleccione un curso...</option>
+                            <option value="primaria">Primaria</option>
+                            <option value="secundaria">Secundaria</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="profesor">Seleccionar Profesor / Materia:</label>
+                        <select id="profesor" required>
+                            <option value="">Seleccione el docente...</option>
+                            <option value="prof1">Prof. Carlos Mendoza - Matemáticas</option>
+                            <option value="prof2">Profa. Ana María Choque - Lenguaje</option>
+                            <option value="prof3">Prof. Jorge Siles - Ciencias Sociales</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="motivo">Motivo de la Consulta:</label>
+                        <textarea id="motivo" rows="4" required placeholder="Escriba su consulta o solicitud de reunión aquí..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-enviar">Enviar Consulta</button>
+                </form>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2026 Colegio La Primera - Bolivia. Todos los derechos reservados.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // Función para ocultar la pantalla de bienvenida e ingresar a la principal
+        function ingresarWeb() {
+            const bienvenida = document.getElementById('pantalla-bienvenida');
+            const principal = document.getElementById('pantalla-principal');
+            
+            bienvenida.style.opacity = '0';
+            setTimeout(() => {
+                bienvenida.style.display = 'none';
+                principal.style.display = 'block';
+            }, 500);
+        }
+
+        // Función para la navegación entre los 4 puntos del menú
+        function cambiarSeccion(idSeccion) {
+            // Ocultar todas las secciones
+            const secciones = document.querySelectorAll('.seccion');
+            secciones.forEach(sec => sec.classList.remove('activa'));
+
+            // Quitar clase active a los botones de navegación
+            const links = document.querySelectorAll('nav ul li a');
+            links.forEach(link => link.classList.remove('active'));
+
+            // Mostrar sección seleccionada y activar su botón
+            document.getElementById(idSeccion).classList.add('activa');
+            document.getElementById('nav-' + idSeccion).classList.add('active');
+
+            // Scroll automático al inicio de la página al cambiar de sección
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        // Lógica simple para simular el envío del formulario
+        function enviarFormulario(event) {
+            event.preventDefault();
+            alert('¡Formulario enviado con éxito! El profesor se pondrá en contacto con usted a la brevedad.');
+            document.getElementById('formConsulta').reset();
+        }
+    </script>
+</body>
+</html>
